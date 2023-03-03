@@ -36,6 +36,9 @@ require('packer').startup(function(use)
     use {'L3MON4D3/LuaSnip'}
     -- ========== NAVIGATION ========== --
     use {'psliwka/vim-smoothie'}
+    -- ===== OTHER ===== -- 
+    use {'udalov/kotlin-vim'} -- kotlin syntax hl
+
     if install_plugins then
         require('packer').sync() end
 end)
