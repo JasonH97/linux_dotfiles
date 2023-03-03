@@ -284,7 +284,7 @@ vim.opt.termguicolors = true -- enable hexadecimal colors
 vim.cmd('colorscheme industry')
 vim.cmd('hi Normal guibg=NONE ctermbg=NONE') -- transparent backgrounnd
 vim.wo.colorcolumn = '80'
-vim.opt.cursorline = true
+vim.opt.cursorline = false
 
 
 
