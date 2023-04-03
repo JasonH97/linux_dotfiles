@@ -1,0 +1,17 @@
+$include /etc/inputrc
+
+set completion-ignore-case on
+set completion-prefix-display-length 2
+set completion-map-case on
+
+# PgUp searches history for commands that start with the currently entered text
+"\e[5~": history-search-backward
+
+# PgDown is the same as the above but searches the other way through history
+"\e[6~": history-search-forward
+
+# Ctrl+Right
+"\e[1;5C": forward-word
+
+# Ctrl+Left
+"\e[1;5D": backward-word
