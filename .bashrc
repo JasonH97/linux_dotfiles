@@ -2,6 +2,7 @@
 # it does contain some super useful bits, particularly the ability to show
 # current git branch if the current dir is a git repo
 
+# TODO: refactor to be truly my own, instead of my changes to ubuntu defaults
 
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
@@ -21,8 +22,8 @@ HISTCONTROL=ignoreboth:erasedups
 shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=10000
-HISTFILESIZE=10000
+HISTSIZE=
+HISTFILESIZE=
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -32,7 +33,7 @@ shopt -s checkwinsize
 # match all files and zero or more directories and subdirectories.
 #shopt -s globstar
 
-# make `less` more friendly for non-text input files, see lesspipe(1)
+# make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # set variable identifying the chroot you work in (used in the prompt below)
@@ -61,7 +62,6 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
-# Credit: Alex P.
 parse_git_branch() {
     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
@@ -91,6 +91,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias laa='ls -ld .?*'
     #alias dir='dir --color=auto'
     #alias vdir='vdir --color=auto'
+
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
@@ -109,24 +110,17 @@ alias ggrep='git grep --color=auto'
 alias hgrep='history | grep --color=auto'
 alias lo='libreoffice'
 alias x='xdg-open'
-#alias vim='nvim' # Uncomment if you use neovim over vim
+#alias update='sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y' # commented out after this command downgraded my kernel to one with a critical vulnerability after I recently manually upgraded it
+alias vim='nvim-apt' # I have installed and configured neovim to replace vim
 alias cp='cp -v'
 alias clip='xclip -sel clip'
 
+# create timestamp
+alias timestamp='echo -n "lastModified: " && date -u +\%FT\%TZ'
+
 # custom functions
-function lvim { # edit a UNIQUE file in vim knowing only the filename, no dir
+function lovim {
     vim "$(locate "$1" | grep -Pv '\.swp$' | head -n1)"
-}
-
-function cvim { # usage: "cvim foo" -> opens vim with the output of command foo
-    vim <($*)
-}
-
-function cs { # EXPERIMENTAL: run C code like a script
-    _TEMPFILE_=$(echo $RANDOM | md5sum | head -c 20)
-    gcc "$1" -o $_TEMPFILE_ && \
-    ./$_TEMPFILE_ && \
-    rm $_TEMPFILE_
 }
 
 # Alias definitions.
@@ -152,15 +146,28 @@ fi
 # spell check
 shopt -s cdspell
 
+# servers
+alias pi="ssh pi@raspberrypi.local"
+
 # python path
 export PYTHONPATH="${PYTHONPATH}:/home/$USER/.local/bin"
 
 # PATH
-export PATH=/home/$USER/.local/bin:/home/$USER/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/$USER/bin:/home/$USER/bin/kotlinc/bin:/home/$USER/Android/android-studio/bin
-
-# open tmux when not in tmux
-if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
-  exec tmux -f ~/.tmux.conf
-fi
+export PATH=/home/$USER/.local/bin:/home/$USER/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/$USER/bin:/home/$USER/bin/kotlinc/bin:/home/$USER/Android/android-studio/bin:/home/$USER/.cargo/bin
 
 # put launch commands here
+
+#cat ~/personal-not-work-related/antiochian/motd.txt
+echo ================================================================================
+hostnamectl
+cat ~/AUTOSORT/$USER/TXT/todo.txt
+
+
+## open tmux when not in tmux
+#if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
+#  exec tmux -f ~/.tmux.conf
+#fi
+alias ghtoken="tail -n1 ~/AUTOSORT/$USER/TXT/git.txt | clip"
+echo "<ctrl><shift><u>0394 = Δ"
+#. "$HOME/.cargo/env"
+echo 
