@@ -1,4 +1,4 @@
-# This config should be located at ~/.config/qutebrowser/config.py
+# This config should be located in ~/.config/qutebrowser/
 
 # DEPENDENCIES
 # mpv
@@ -16,27 +16,30 @@ c.url.start_pages = "about:blank"
 
 # SEARCH ENGINES
 c.url.searchengines = {
-        "DEFAULT" : "https://xo.wtf/search?q={}&category_general=1&language=en-US&time_range=&safesearch=1&theme=simple", # searX
+        "DEFAULT" : "https://duckduckgo.com/?q={}",
         "5e" : "https://roll20.net/compendium/dnd5e/{}#content", # Dungeons & Dragons (Don't worry Grandma I'm not summoning demons)
         "az" : "https://www.amazon.com/s?k={}", # This is unironically closer to summoning demons
+        "b" : "https://www.bing.com/search?q={}",
         "ddg" : "https://duckduckgo.com/?q={}",
         "domain" : "https://whois.domaintools.com/{}", # for looking up domain information
+        "g" : "https://google.com/search?q={}",
         "gh" : "https://github.com/search?q={}",
         "herb" : "https://www.iherb.com/search?kw={}", # good organic teas
-        "m" : "https://metager.org/meta/meta.ger3?eingabe={}",
+        "iv" : "https://yewtu.be/results?search_query={}",
+        "maps" : "https://www.google.com/maps/search/{}",
+        "mg" : "https://metager.org/meta/meta.ger3?eingabe={}",
+        "mj" : "https://www.mojeek.com/search?q={}",
         "o" : "https://odysee.com/$/search?q={}",
-        "pd" : "https://piped.kavin.rocks/results?search_query={}",
-        "ps" : "https://presearch.com/search?q={}", # probably not trustworthy
         "th" : "https://thangs.com/search/{}",
         "w" : "https://en.wikipedia.org/w/index.php?search={}&title=Special%3ASearch&go=Go&ns0=1",
         "x" : "https://xo.wtf/search?q={}&category_general=1&language=en-US&time_range=&safesearch=1&theme=simple", # searX
-        "yt" : "https://invidious.snopyta.org/results?search_query={}",
+        "yt" : "https://piped.video/results?search_query={}",
         "yx" : "https://yandex.com/search/?text={}",
 }
 
 # SHORTCUTS
     # mpv - these work but are restricted by my mpv config being trash - videos spend eternity buffering and is unwatchable in current state
-#config.bind("em", 'hint links spawn nohup mpv --force-window=immediate {hint-url}')
+config.bind('em', 'hint links spawn nohup mpv --cache=yes --demuxer-max-bytes=300M --demuxer-max-back-bytes=100M -ytdl-format="bv[ext=mp4]+ba/b" --force-window=immediate --fs=yes {hint-url}')
 #config.bind("eM", 'spawn nohup mpv {url}')
     # youtube-dl
 config.bind("gyv", 'spawn quteytdl {url}') # run script to download video from youtube
@@ -68,6 +71,7 @@ c.hints.chars = "asdfghjkl"
 c.qt.force_software_rendering = "chromium"
 c.scrolling.smooth = True
 c.session.lazy_restore = True
+#c.scrolling.bar = "never"
 
 # STATUS BAR
 c.statusbar.show = "always"
@@ -91,8 +95,15 @@ c.content.cookies.store = True
 c.content.default_encoding = "utf-8"
 c.content.javascript.enabled = True
 
-# DARK MODE (this doesnt seem to be working at the moment)
+# DARK MODE 
 c.colors.webpage.darkmode.enabled = True
+#c.colors.webpage.darkmode.algorithm = "lightness-cielab"
+#c.colors.webpage.darkmode.algorithm = "lightness-hsl"
+c.colors.webpage.darkmode.algorithm = "brightness-rgb"
+c.colors.webpage.darkmode.contrast = 0.5
+c.colors.webpage.darkmode.threshold.text = 150
+c.colors.webpage.darkmode.threshold.background = 205
+
 
 # COLORS
 # source: https://github.com/inv4d3r/qute-config/blob/master/config.py & minor changes made

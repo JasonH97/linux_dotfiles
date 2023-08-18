@@ -10,4 +10,4 @@
 
 //Piped has been less reliable lately, using invidious instead now
 //location.href=location.href.replace("www.youtube.com","piped.kavin.rocks")
-location.href=location.href.replace("www.youtube.com","yewtu.be")
+location.href=location.href.replace("www.youtube.com","invidious.esmailelbob.xyz")

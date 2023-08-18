@@ -8,4 +8,5 @@
 // @run-at 	document-start
 // ==/UserScript==
 
-location.href=location.href.replace("twitter.com","nitter.net")
+// with the more recent changes to twitter, nitter no longer works
+//location.href=location.href.replace("twitter.com","nitter.net")
