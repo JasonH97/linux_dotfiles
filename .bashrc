@@ -1,12 +1,49 @@
-# This is the .bashrc for my ubuntu work laptop. much of it is the default but
-# it does contain some super useful bits, particularly the ability to show
-# current git branch if the current dir is a git repo
-
-# TODO: refactor to be truly my own, instead of my changes to ubuntu defaults
-
+################################################################################
+# ABOUT
+################################################################################
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
+
+# This .bashrc is based on the one I use for my ubuntu work laptop, but
+# stripped of sensitive information such as custom server ailases, etc. I have
+# organized it into several categories which should make it quicker to find and
+# make changes as needed
+
+
+################################################################################
+# SHELL SETTINGS
+################################################################################
+# files will not be write-able by others by default
+umask 002
+
+# If you ssh into a server and this is your .bashrc on it, avoid confusion of
+# having previous STDOUT still readable. Delineate clearly between sessions
+clear
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# spell check
+shopt -s cdspell
 
 # If not running interactively, don't do anything
 case $- in
@@ -18,22 +55,11 @@ esac
 # See bash(1) for more options
 HISTCONTROL=ignoreboth:erasedups
 
-# append to the history file, don't overwrite it
-shopt -s histappend
-
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=
 HISTFILESIZE=
 
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-shopt -s checkwinsize
-
-# If set, the pattern "**" used in a pathname expansion context will
-# match all files and zero or more directories and subdirectories.
-#shopt -s globstar
-
-# make less more friendly for non-text input files, see lesspipe(1)
+# make `less` more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # set variable identifying the chroot you work in (used in the prompt below)
@@ -46,9 +72,6 @@ case "$TERM" in
     xterm-color|*-256color) color_prompt=yes;;
 esac
 
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
 force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
@@ -62,6 +85,19 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
+*)
+    ;;
+esac
+
+
+################################################################################
+# GIT
+################################################################################
 parse_git_branch() {
     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
@@ -75,14 +111,16 @@ else
 fi
 unset color_prompt force_color_prompt
 
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
+
+################################################################################
+# ALIASES & FUNCTIONS
+################################################################################
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -110,64 +148,58 @@ alias ggrep='git grep --color=auto'
 alias hgrep='history | grep --color=auto'
 alias lo='libreoffice'
 alias x='xdg-open'
-#alias update='sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y' # commented out after this command downgraded my kernel to one with a critical vulnerability after I recently manually upgraded it
-alias vim='nvim-apt' # I have installed and configured neovim to replace vim
 alias cp='cp -v'
 alias clip='xclip -sel clip'
+alias ghtoken="tail -n1 ~/AUTOSORT/$USER/TXT/git.txt | clip"
+alias please='sudo $(history -p !!)'
+alias emacs="emacs -nw"
+alias timestamp='date -u +\%FT\%TZ'
 
-# create timestamp
-alias timestamp='echo -n "lastModified: " && date -u +\%FT\%TZ'
+# exit aliases
+alias .q='exit'  # sqlite style
+alias :q='exit'  # vim style
 
 # custom functions
 function lovim {
     vim "$(locate "$1" | grep -Pv '\.swp$' | head -n1)"
 }
 
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
 
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
-fi
-
-# spell check
-shopt -s cdspell
-
-# servers
+################################################################################
+# NETWORK
+################################################################################
 alias pi="ssh pi@raspberrypi.local"
 
-# python path
+
+################################################################################
+# PATHS
+################################################################################
+export PATH=/home/$USER/.local/bin:/home/$USER/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/$USER/bin:/snap/bin
 export PYTHONPATH="${PYTHONPATH}:/home/$USER/.local/bin"
 
-# PATH
-export PATH=/home/$USER/.local/bin:/home/$USER/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/$USER/bin:/home/$USER/bin/kotlinc/bin:/home/$USER/Android/android-studio/bin:/home/$USER/.cargo/bin
 
-# put launch commands here
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+# PUT LAUNCH COMMANDS BELOW HERE
+################################################################################
 
-#cat ~/personal-not-work-related/antiochian/motd.txt
-echo ================================================================================
-hostnamectl
-cat ~/AUTOSORT/$USER/TXT/todo.txt
-
-
-## open tmux when not in tmux
+## uncomment to immediately enter Tmux when sourcing this file
 #if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
 #  exec tmux -f ~/.tmux.conf
 #fi
-alias ghtoken="tail -n1 ~/AUTOSORT/$USER/TXT/git.txt | clip"
-echo "<ctrl><shift><u>0394 = Δ"
-#. "$HOME/.cargo/env"
-echo 
+
+################################################################################
+# PUT LAUNCH COMMANDS ABOVE HERE
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+echo  # I like a little space between any .bashrc messages and my prompt
