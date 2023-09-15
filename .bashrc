@@ -164,6 +164,14 @@ function lovim {
     vim "$(locate "$1" | grep -Pv '\.swp$' | head -n1)"
 }
 
+function bak {
+  for file_path in "$@"; do
+    if [ -e "$file_path" ]; then
+      cp -v $file_path{,.bak}
+    fi
+  done
+}
+
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
