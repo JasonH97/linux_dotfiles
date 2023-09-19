@@ -160,6 +160,15 @@ alias .q='exit'  # sqlite style
 alias :q='exit'  # vim style
 
 # custom functions
+function emacs {
+    /usr/bin/emacsclient -nw $@ 2>/dev/null || \
+    {
+        echo "No emacs daemon found, initializing one..."
+        /usr/bin/emacs --daemon 2>/dev/null
+        /usr/bin/emacsclient -nw $@
+    }
+}
+
 function lovim {
     vim "$(locate "$1" | grep -Pv '\.swp$' | head -n1)"
 }
