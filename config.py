@@ -3,9 +3,8 @@
 # DEPENDENCIES
 # mpv
 # link2qr
-# user script quteytdl in $PATH
-# user script quteytdlaudio in $PATH
-# gnome-terminal or konsole (depends on your DE, changes might be necessary)
+# yt-dlp
+# gnome-terminal (depends on your DE, changes might be necessary)
 
 # ENABLE
 config.load_autoconfig()
@@ -30,6 +29,8 @@ c.url.searchengines = {
         "mg" : "https://metager.org/meta/meta.ger3?eingabe={}",
         "mj" : "https://www.mojeek.com/search?q={}",
         "o" : "https://odysee.com/$/search?q={}",
+        "sprouts" : "https://shop.sprouts.com/search?search_term={}&search_is_autocomplete=false",
+        "trader" : "https://www.traderjoes.com/home/search?q={}&global=yes",
         "th" : "https://thangs.com/search/{}",
         "w" : "https://en.wikipedia.org/w/index.php?search={}&title=Special%3ASearch&go=Go&ns0=1",
         "x" : "https://xo.wtf/search?q={}&category_general=1&language=en-US&time_range=&safesearch=1&theme=simple", # searX
@@ -42,8 +43,8 @@ c.url.searchengines = {
 config.bind('em', 'hint links spawn nohup mpv --cache=yes --demuxer-max-bytes=300M --demuxer-max-back-bytes=100M -ytdl-format="bv[ext=mp4]+ba/b" --force-window=immediate --fs=yes {hint-url}')
 #config.bind("eM", 'spawn nohup mpv {url}')
     # youtube-dl
-config.bind("gyv", 'spawn quteytdl {url}') # run script to download video from youtube
-config.bind("gya", 'spawn quteytdlaudio {url}') # run script to download audio from youtube
+config.bind("gyv", "spawn sh -c \"notify-send 'Downloading video...' '{url}' && yt-dlp '{url}' -P /home/$USER/Videos/ && notify-send 'Download complete!' '{url}' || notify-send 'Download failed...' '{url}' \"")
+config.bind("gya", "spawn sh -c \"notify-send 'Downloading audio...' '{url}' && yt-dlp -f bestaudio '{url}' -P /home/$USER/Music/ && notify-send 'Download complete!' '{url}' || notify-send 'Download failed...' '{url}'\"")
     # generate qr code
 config.bind("gqr", 'spawn link2qr {url}')
     # edit config
@@ -51,7 +52,7 @@ config.bind("ec", "config-edit")
     # zoom
 config.bind("+", "zoom-in")
 config.bind("-", "zoom-out")
-    # javascript
+    # enable/disable javascript
 config.bind("sjt", "set content.javascript.enabled True ;; reload")
 config.bind("sjf", "set content.javascript.enabled False ;; reload")
     # web archive
@@ -66,7 +67,7 @@ c.downloads.location.directory = "~/Downloads"
 
 # BROWSER
 c.auto_save.session = True
-c.editor.command = [ "gnome-terminal", "--", "nvim", "{}" ]
+c.editor.command = [ 'gnome-terminal', '--', 'vim', '--clean', '{}' ]
 c.hints.chars = "asdfghjkl"
 c.qt.force_software_rendering = "chromium"
 c.scrolling.smooth = True
@@ -95,11 +96,11 @@ c.content.cookies.store = True
 c.content.default_encoding = "utf-8"
 c.content.javascript.enabled = True
 
-# DARK MODE 
+# DARK MODE
 c.colors.webpage.darkmode.enabled = True
-#c.colors.webpage.darkmode.algorithm = "lightness-cielab"
+c.colors.webpage.darkmode.algorithm = "lightness-cielab"
 #c.colors.webpage.darkmode.algorithm = "lightness-hsl"
-c.colors.webpage.darkmode.algorithm = "brightness-rgb"
+#c.colors.webpage.darkmode.algorithm = "brightness-rgb"
 c.colors.webpage.darkmode.contrast = 0.5
 c.colors.webpage.darkmode.threshold.text = 150
 c.colors.webpage.darkmode.threshold.background = 205
@@ -121,11 +122,11 @@ c.colors.completion.match.fg = "#689d6a"
 c.colors.completion.scrollbar.fg = c.colors.completion.fg
 # c.colors.completion.scrollbar.bg = c.colors.completion.bg
 c.colors.statusbar.normal.fg = "#a89984"
-c.colors.statusbar.normal.bg = "#252525"
+c.colors.statusbar.normal.bg = "#282828"
 c.colors.statusbar.private.fg = c.colors.statusbar.normal.fg
 c.colors.statusbar.private.bg = "#666666"
 c.colors.statusbar.insert.fg = c.colors.statusbar.normal.fg
-c.colors.statusbar.insert.bg = "#252525"
+c.colors.statusbar.insert.bg = "#282828"
 c.colors.statusbar.command.fg = c.colors.statusbar.normal.fg
 c.colors.statusbar.command.bg = c.colors.statusbar.normal.bg
 c.colors.statusbar.command.private.fg = c.colors.statusbar.private.fg
@@ -143,13 +144,15 @@ c.colors.statusbar.url.warn.fg = "#b16286"
 c.colors.statusbar.url.hover.fg = "#458588"
 c.colors.tabs.odd.fg = "#a89984"
 c.colors.tabs.odd.bg = "#1d2021"
-c.colors.tabs.even.fg = "#a89984"
-c.colors.tabs.even.bg = "#1d2021"
+c.colors.tabs.even.fg = c.colors.tabs.odd.fg
+c.colors.tabs.even.bg = c.colors.tabs.odd.bg
 c.colors.tabs.selected.odd.fg = "#8ec07c"
-c.colors.tabs.selected.odd.bg = "#282828"
+#c.colors.tabs.selected.odd.bg = "#282828"
+c.colors.tabs.selected.odd.bg = "#0f0f0f"
 c.colors.tabs.selected.even.fg = c.colors.tabs.selected.odd.fg
 c.colors.tabs.selected.even.bg = c.colors.tabs.selected.odd.bg
-c.colors.tabs.bar.bg = "#0f0f0f"
+#c.colors.tabs.bar.bg = "#0f0f0f"
+c.colors.tabs.bar.bg = "#282828"
 c.colors.tabs.indicator.start = "#ebdbb2"
 c.colors.tabs.indicator.stop = "#b16286"
 c.colors.tabs.indicator.error = "#d65d0e"
