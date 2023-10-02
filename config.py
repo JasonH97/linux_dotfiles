@@ -6,6 +6,7 @@
 # yt-dlp
 # gnome-terminal (depends on your DE, changes might be necessary)
 
+
 # ENABLE
 config.load_autoconfig()
 
@@ -45,6 +46,9 @@ config.bind('em', 'hint links spawn nohup mpv --cache=yes --demuxer-max-bytes=30
     # youtube-dl
 config.bind("gyv", "spawn sh -c \"notify-send 'Downloading video...' '{url}' && yt-dlp '{url}' -P /home/$USER/Videos/ && notify-send 'Download complete!' '{url}' || notify-send 'Download failed...' '{url}' \"")
 config.bind("gya", "spawn sh -c \"notify-send 'Downloading audio...' '{url}' && yt-dlp -f bestaudio '{url}' -P /home/$USER/Music/ && notify-send 'Download complete!' '{url}' || notify-send 'Download failed...' '{url}'\"")
+    # toggle transparency
+config.bind("ety", 'spawn sh -c \'ID=$(xwininfo -tree -root | grep "qutebrowser.*qutebrowser" | awk "{print \$1}"); xprop -id $ID -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY 0xEFFFFFFF\'') # set transparency to 10%
+config.bind("etn", 'spawn sh -c \'ID=$(xwininfo -tree -root | grep "qutebrowser.*qutebrowser" | awk "{print \$1}"); xprop -id $ID -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY 0xFFFFFFFF\'') # set transparency to 0%
     # generate qr code
 config.bind("gqr", 'spawn link2qr {url}')
     # edit config
