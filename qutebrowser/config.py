@@ -44,11 +44,18 @@ c.url.searchengines = {
 config.bind('em', 'hint links spawn nohup mpv --cache=yes --demuxer-max-bytes=300M --demuxer-max-back-bytes=100M -ytdl-format="bv[ext=mp4]+ba/b" --force-window=immediate --fs=yes {hint-url}')
 #config.bind("eM", 'spawn nohup mpv {url}')
     # youtube-dl
-config.bind("gyv", "spawn sh -c \"notify-send 'Downloading video...' '{url}' && yt-dlp '{url}' -P /home/$USER/Videos/ && notify-send 'Download complete!' '{url}' || notify-send 'Download failed...' '{url}' \"")
-config.bind("gya", "spawn sh -c \"notify-send 'Downloading audio...' '{url}' && yt-dlp -f bestaudio '{url}' -P /home/$USER/Music/ && notify-send 'Download complete!' '{url}' || notify-send 'Download failed...' '{url}'\"")
+# Video - Single
+config.bind("gyv", "spawn sh -c \"notify-send 'Downloading video...' '{url}' && yt-dlp '{url}' -P /home/$USER/Videos/ && notify-send 'Download complete' '{url}' || notify-send 'Download failed...' '{url}' \"")
+# Audio - Single
+config.bind("gya", "spawn sh -c \"notify-send 'Downloading audio...' '{url}' && yt-dlp -f bestaudio '{url}' -P /home/$USER/Music/ && notify-send 'Download complete' '{url}' || notify-send 'Download failed...' '{url}'\"")
+# Video - Playlist
+config.bind("gypv", "spawn --userscript ytplaylist.sh -u '{url}'")
+# Audio - Playlist
+config.bind("gypa", "spawn --userscript ytplaylist.sh -u '{url}' -a")
     # toggle transparency
-config.bind("ety", 'spawn sh -c \'ID=$(xwininfo -tree -root | grep "qutebrowser.*qutebrowser" | awk "{print \$1}"); xprop -id $ID -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY 0xEFFFFFFF\'') # set transparency to 10%
-config.bind("etn", 'spawn sh -c \'ID=$(xwininfo -tree -root | grep "qutebrowser.*qutebrowser" | awk "{print \$1}"); xprop -id $ID -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY 0xFFFFFFFF\'') # set transparency to 0%
+config.bind("stt", 'spawn sh -c \'ID=$(xwininfo -tree -root | grep "qutebrowser.*qutebrowser" | awk "{print \$1}"); xprop -id $ID -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY 0xEFFFFFFF\'') # set transparency to 10%
+config.bind("stf", 'spawn sh -c \'ID=$(xwininfo -tree -root | grep "qutebrowser.*qutebrowser" | awk "{print \$1}"); xprop -id $ID -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY 0xFFFFFFFF\'') # set transparency to 0%
+
     # generate qr code
 config.bind("gqr", 'spawn link2qr {url}')
     # edit config
