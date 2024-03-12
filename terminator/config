@@ -1,0 +1,98 @@
+[global_config]
+  handle_size = 1
+  suppress_multiple_term_dialog = True
+  title_font = Sans 20
+[keybindings]
+  help = ""
+[profiles]
+  [[default]]
+    background_color = "#282828"
+    background_darkness = 0.9
+    cursor_color = "#aaaaaa"
+    font = Ubuntu Mono 16
+    foreground_color = "#ffffff"
+    use_system_font = False
+  [[stock]]
+    cursor_color = "#aaaaaa"
+  [[TEST]]
+    cursor_color = "#aaaaaa"
+    exit_action = hold
+    login_shell = True
+    use_custom_command = True
+    custom_command = clear
+[layouts]
+  [[default]]
+    [[[child0]]]
+      type = Window
+      parent = ""
+      order = 0
+      position = 86:27
+      maximised = True
+      fullscreen = False
+      size = 1834, 1136
+      title = /bin/bash
+      last_active_window = True
+    [[[child1]]]
+      type = Notebook
+      parent = child0
+      order = 0
+      labels = SCRATCH, SKILLS, JPC, OTHER, MUSIC
+      last_active_term = ec67a039-44ac-4ce8-9bcf-0f66ec8e8e8f, c103a068-2ff4-4a4e-a117-8c013623dce0, 56620354-51d3-4b6f-b9c1-4e77c560bcec, b7d6b7a9-9b18-49c9-b6f7-92454b641e00, 4f0c721d-6ff2-479a-a6e3-c04b66cf6340
+      active_page = 0
+    [[[terminal2]]]
+      type = Terminal
+      parent = child1
+      order = 0
+      profile = default
+      uuid = ec67a039-44ac-4ce8-9bcf-0f66ec8e8e8f
+      directory = /home/jason.heald/
+      command = ""
+    [[[terminal3]]]
+      type = Terminal
+      parent = child1
+      order = 1
+      profile = default
+      uuid = c103a068-2ff4-4a4e-a117-8c013623dce0
+      directory = /home/jason.heald/working/skills_taxonomy_management/
+    [[[terminal4]]]
+      type = Terminal
+      parent = child1
+      order = 2
+      profile = default
+      uuid = 56620354-51d3-4b6f-b9c1-4e77c560bcec
+      directory = /home/jason.heald/working/JPC/
+    [[[terminal5]]]
+      type = Terminal
+      parent = child1
+      order = 3
+      profile = default
+      uuid = b7d6b7a9-9b18-49c9-b6f7-92454b641e00
+      directory = /home/jason.heald/
+      command = ""
+    [[[terminal6]]]
+      type = Terminal
+      parent = child1
+      order = 4
+      profile = default
+      uuid = 4f0c721d-6ff2-479a-a6e3-c04b66cf6340
+      command = ""
+      directory = /home/jason.heald/Music/
+  [[stock]]
+    [[[child0]]]
+      type = Window
+      parent = ""
+      order = 0
+      position = 86:27
+      maximised = True
+      fullscreen = False
+      size = 1834, 1136
+      title = /bin/bash
+      last_active_term = 09c28bb9-d523-4770-bcf1-57b267f6c956
+      last_active_window = True
+    [[[terminal1]]]
+      type = Terminal
+      parent = child0
+      order = 0
+      profile = default
+      uuid = 09c28bb9-d523-4770-bcf1-57b267f6c956
+[plugins]
