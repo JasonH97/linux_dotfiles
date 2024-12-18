@@ -157,6 +157,8 @@ alias checkcam="mpv --profile=low-latency --untimed /dev/video0 --fullscreen"
 alias setgamma="xrandr --output `xrandr | grep \" connected\" | head -n1 | cut -f1 -d\" \"` --brightness "
 alias mpv="mpv --no-resume-playback"
 alias clip='xclip -sel clip'
+alias randname="cat /dev/urandom | tr -cd 'a-f0-9' | head -c 32"
+alias ghtoken="cat /home/$USER/Documents/TEXT/git.txt | clip"
 alias dockerdesktop="systemctl --user enable docker-desktop ; sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 &>/dev/null ; systemctl --user restart docker-desktop"
 #alias ghtoken="tail -n1 ~/AUTOSORT/$USER/TXT/git.txt | clip"
 alias please='sudo $(history -p !!)'
