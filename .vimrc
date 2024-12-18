@@ -1,3 +1,4 @@
+"""
 " Install vim-plug if not found
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -12,10 +13,22 @@ autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
 call plug#begin()
 
 " Smooth scroll
-Plug 'psliwka/vim-smoothie'
+"Plug 'psliwka/vim-smoothie'
 
 " Rainbow CSV
 Plug 'mechatroner/rainbow_csv'
+
+" VimCompletesMe
+Plug 'vim-scripts/VimCompletesMe'
+
+" vim-airline
+"Plug 'bling/vim-airline' " commented out until I get the time to understand and configure it. Not sure if it is really that necessary tbh
+
+" syntastic
+Plug 'vim-syntastic/syntastic'
+
+" Rainbow Parentheses Improved
+"Plug 'frazrepo/vim-rainbow'
 
 " Gruvbox
 "Plug 'morhetz/gruvbox'
@@ -25,6 +38,12 @@ Plug 'mechatroner/rainbow_csv'
 
 " Initialize plugin system
 call plug#end()
+"""
+
+" Example to call Rainbow Parentheses on specific file types
+"au FileType c,cpp,objc,objcpp call rainbow#load()
+" Otherwise, call it on every file
+let g:rainbow_active = 1
 
 
 
@@ -185,7 +204,7 @@ set nofoldenable
 set foldlevel=1
 
 """Color scheme
-color ron
+"color ron
 
 """Color the 80th col
 set t_Co=256
@@ -213,3 +232,67 @@ set incsearch
 
 """spellcheck
 """set spell
+
+
+augroup vimrc_todo
+    au!
+    au Syntax * syn match MyTodo /\v<(HACK|TEST|FIXME|NOTE|TODO|OPTIMIZE|WARNING):/
+          \ containedin=.*Comment,vimCommentTitle
+augroup END
+hi def link MyTodo Todo
+" testing the above augroup highlighting
+" FIXME:
+" HACK:
+" NOTE:
+" OPTIMIZE:
+" TEST:
+" TODO:
+" WARNING:
+
+" Align highlighted text on first occurrence of '='
+command! -range -nargs=* Align <line1>,<line2>!column -t -s= -o=
+
+" GPT arbitrary argument for Align, works for 'ON' but not '='
+command! -range -nargs=+ AlignText <line1>,<line2> call AlignLines(<f-args>)
+function! AlignLines(separator) range
+    let separator = escape(a:separator, '\')
+    let lines = getline(a:firstline, a:lastline)
+    let max_length = 0
+
+    " Find the length of the text before the separator on each line
+    for line in lines
+        let index = match(line, separator)
+        if index >= 0
+            let prefix = line[:index]
+            let length = strdisplaywidth(substitute(prefix, '\t', repeat(' ', &tabstop), 'g'))
+            if length > max_length
+                let max_length = length
+            endif
+        endif
+    endfor
+
+    " Replace the separator with spaces to align
+    for i in range(a:firstline, a:lastline)
+        let line = getline(i)
+        let index = match(line, separator)
+        if index >= 0
+            let prefix = line[:index]
+            let spaces = repeat(' ', max_length - strdisplaywidth(substitute(prefix, '\t', repeat(' ', &tabstop), 'g')))
+            let new_line = substitute(line, '\v' . separator, '\=spaces . submatch(0)', '')
+            call setline(i, new_line)
+        endif
+    endfor
+endfunction
+
+" source: https://vi.stackexchange.com/questions/343/how-to-edit-binary-files-with-vim
+" for hex editing
+augroup Binary
+  au!
+  au BufReadPre  *.bin let &bin=1
+  au BufReadPost *.bin if &bin | %!xxd
+  au BufReadPost *.bin set ft=xxd | endif
+  au BufWritePre *.bin if &bin | %!xxd -r
+  au BufWritePre *.bin endif
+  au BufWritePost *.bin if &bin | %!xxd
+  au BufWritePost *.bin set nomod | endif
+augroup END
