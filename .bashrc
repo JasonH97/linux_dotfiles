@@ -1,4 +1,4 @@
-################################################################################
+#'###############################################################################
 # ABOUT
 ################################################################################
 # ~/.bashrc: executed by bash(1) for non-login shells.
@@ -56,8 +56,8 @@ esac
 HISTCONTROL=ignoreboth:erasedups
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=
-HISTFILESIZE=
+HISTSIZE=1048576
+HISTFILESIZE=1048576
 
 # make `less` more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -144,36 +144,111 @@ alias la='ls -AF'
 alias ll='ls -lhF'
 
 # custom aliases
+alias update='sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y'
+alias untar='tar -xvf'
+alias motd='vim ~/.motd'
+alias sauce='source ~/.bashrc'
 alias ggrep='git grep --color=auto'
 alias hgrep='history | grep --color=auto'
 alias lo='libreoffice'
 alias x='xdg-open'
 alias cp='cp -v'
+alias checkcam="mpv --profile=low-latency --untimed /dev/video0 --fullscreen"
+alias setgamma="xrandr --output `xrandr | grep \" connected\" | head -n1 | cut -f1 -d\" \"` --brightness "
+alias mpv="mpv --no-resume-playback"
 alias clip='xclip -sel clip'
-alias ghtoken="tail -n1 ~/AUTOSORT/$USER/TXT/git.txt | clip"
+alias dockerdesktop="systemctl --user enable docker-desktop ; sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 &>/dev/null ; systemctl --user restart docker-desktop"
+#alias ghtoken="tail -n1 ~/AUTOSORT/$USER/TXT/git.txt | clip"
 alias please='sudo $(history -p !!)'
-alias emacs="emacs -nw"
 alias timestamp='date -u +\%FT\%TZ'
-
 # exit aliases
-alias .q='exit'  # sqlite style
-alias :q='exit'  # vim style
+alias sd='shutdown now' # shutdown system
 
 # custom functions
-function emacs {
-    /usr/bin/emacsclient -nw $@ 2>/dev/null || \
-    {
-        echo "No emacs daemon found, initializing one..."
-        /usr/bin/emacs --daemon 2>/dev/null
-        /usr/bin/emacsclient -nw $@
-    }
+megagrep() {
+    # my subpar attempt to parallelize grep
+    # splitting on bytes is WAY quicker but jeopardizes recall
+    # TODO: test by how much, I can take a 1% loss of recall for 10x SPEED
+    if [ $# -ne 2 ]; then
+        echo "Usage: megagrep <search_pattern> <filename>"
+        return 1
+    fi
+    local pattern="$1"; local filename="$2"
+    if [ ! -f "$2" ]; then
+        echo "Error: File '${filename}' not found."
+        return 1
+    fi
+    parallel --pipepart --block 50000k -a "${filename}" -k grep -e "${pattern}"
 }
 
-function lovim {
-    vim "$(locate "$1" | grep -Pv '\.swp$' | head -n1)"
+
+download-album() {
+    # USE: simply supply youtube playlist link as $1
+    # e.g. user@computer:~/Music\ $ download-album \
+    # "https://www.youtube.com/playlist?list=PLI6kLIhBBwmTQ5V6ekRMb-PcXXO8klLSl"
+    yt-dlp --sleep-interval 1 --sleep-requests 1 --retry-sleep fragment:300 \
+        --ignore-errors --ignore-errors --format bestaudio --extract-audio \
+        --output "%(playlist_index)s - %(title)s.%(ext)s" --yes-playlist "$1"
 }
 
-function bak {
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+safevim() {
+    vim <(cat $1)
+}
+
+fvim() {
+    vim $(find ./ -name $1)
+}
+
+vimgrep-simple() {
+    vim +$(grep -ni "${@:1:$#-1}" "${!#}" | head -n1 | cut -d':' -f1) "${!#}"
+}
+
+vimgrep() {
+    local USAGE="Usage: grep_select <pattern> [file1] [file2] ..."
+    local PATTERN="$1"; shift
+    local FILES=("$@") # all args after PATTERN are considered
+    local STRIP_ANSI="sed 's/\x1B\[[0-9;]*[JKmsu]//g'"
+
+    # arg assertion
+    if [[ -z "$PATTERN" ]]; then
+        echo "Error: No search pattern provided."
+        echo $USAGE
+        return 1
+    fi
+    if [[ ${#FILES[@]} -eq 0 ]]
+    then
+        echo "Error: No files specified."
+        echo $USAGE
+        return 1
+    fi
+
+    # get matches
+    readarray -t MATCHES < \
+        <(grep -PHin --color=always "$PATTERN" "${FILES[@]}" 2>/dev/null)
+    if [ ${#MATCHES[@]} -eq 0 ]; then
+        echo "No matches found for '$PATTERN' in $FILES"
+        return 1
+    fi
+
+    # menu
+    echo -e "\nSelect a line to edit:"
+    select SEL in "${MATCHES[@]}"; do
+        if [[ -n "$SEL" ]]; then
+            EDIT_FILE=$( echo $SEL | eval $STRIP_ANSI | cut -d ':' -f1 )
+            LINE_NUM=$(  echo $SEL | eval $STRIP_ANSI | cut -d ':' -f2 )
+            vim "$EDIT_FILE" +"$LINE_NUM"
+            break
+        else
+            echo "Invalid selection. Please try again."
+        fi
+    done
+}
+
+bak() {
   for file_path in "$@"; do
     if [ -e "$file_path" ]; then
       cp -v $file_path{,.bak}
@@ -189,13 +264,30 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 ################################################################################
 # NETWORK
 ################################################################################
+# Connect to Lightcast VPN if not already connected
+alias resetwifi="nmcli radio wifi off && nmcli radio wifi on"
+alias reconnect="echo 'Resetting wifi connection' && resetwifi && sleep 5 && vpnUp"
 alias pi="ssh pi@raspberrypi.local"
 
 
 ################################################################################
 # PATHS
 ################################################################################
-export PATH=/home/$USER/.local/bin:/home/$USER/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/$USER/bin:/snap/bin
+export PATH=${PATH}:/bin
+export PATH=${PATH}:/home/$USER/.juliaup/bin # manual Julia installation
+export PATH=${PATH}:/home/$USER/.local/bin
+export PATH=${PATH}:/home/$USER/Bin
+export PATH=${PATH}:/home/$USER/bin
+export PATH=${PATH}:/opt/bin
+export PATH=${PATH}:/opt/ldc2/bin # manual Dlang compiler installation
+export PATH=${PATH}:/sbin
+export PATH=${PATH}:/snap/bin
+export PATH=${PATH}:/usr/bin
+export PATH=${PATH}:/usr/local/bin
+export PATH=${PATH}:/usr/local/sbin
+export PATH=${PATH}:/usr/sbin
+
+# Python
 export PYTHONPATH="${PYTHONPATH}:/home/$USER/.local/bin"
 
 
@@ -211,6 +303,7 @@ export PYTHONPATH="${PYTHONPATH}:/home/$USER/.local/bin"
 #if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
 #  exec tmux -f ~/.tmux.conf
 #fi
+cat ~/.motd
 
 ################################################################################
 # PUT LAUNCH COMMANDS ABOVE HERE
